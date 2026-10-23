@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "name": "prism-studio-144-ryan-vo",
+  "owner": "A220man",
+  "email": "ryandtvo@gmail.com",
+  "domain": "AI/ML developer tools",
+  "summary": "Work in progress: prism-studio-144-ryan-vo",
+  "workflows": [
+    "Browse structured lessons on Claude Code concepts with search and filter",
+    "Generate valid skill YAML templates via Skill Creation Wizard",
+    "Create subagent definitions with model, tools, and system prompts",
+    "Configure MCP servers with transport, auth, and capability settings"
+  ],
+  "auth": "oidc-keycloak-saml-broker",
+  "llm_providers": [
+    "openai-compatible",
+    "anthropic",
+    "gemini",
+    "ollama"
+  ],
+  "status": "work-in-progress"
+}
