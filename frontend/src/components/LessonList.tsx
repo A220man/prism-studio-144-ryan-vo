@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react'
+
+import { useState, useEffect, useCallback } from 'react'
 import { Link } from 'react-router-dom'
 import { api } from '@/api/client'
 
@@ -11,32 +12,64 @@ interface Lesson {
   estimated_minutes: number
 }
 
+const CATEGORIES = ['Fundamentals', 'Skills', 'Agents', 'Integrations', 'Advanced']
+const DIFFICULTIES = ['beginner', 'intermediate', 'advanced'] as const
+
 export function LessonList() {
   const [lessons, setLessons] = useState<Lesson[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [search, setSearch] = useState('')
+  const [category, setCategory] = useState<string>('')
+  const [difficulty, setDifficulty] = useState<'beginner' | 'intermediate' | 'advanced' | ''>('')
+  const [total, setTotal] = useState(0)
+  const [page, setPage] = useState(1)
+  const pageSize = 20
+
+  const fetchLessons = useCallback(async () => {
+    try {
+      setLoading(true)
+      setError(null)
+      const params = new URLSearchParams()
+      params.set('page', page.toString())
+      params.set('page_size', pageSize.toString())
+      if (search) params.set('search', search)
+      if (category) params.set('category', category)
+      if (difficulty) params.set('difficulty', difficulty)
+      const data = await api.get<{ lessons: Lesson[]; total: number; page: number; page_size: number }>(`/api/lessons?${params.toString()}`)
+      setLessons(data.lessons)
+      setTotal(data.total)
+    } catch (e) {
+      setError('Failed to load lessons')
+    } finally {
+      setLoading(false)
+    }
+  }, [page, search, category, difficulty])
 
   useEffect(() => {
-    async function fetchLessons() {
-      try {
-        setLoading(true)
-        const data = await api.get<{ lessons: Lesson[] }>('/api/lessons')
-        setLessons(data.lessons)
-      } catch (e) {
-        setError('Failed to load lessons')
-      } finally {
-        setLoading(false)
-      }
-    }
     fetchLessons()
-  }, [])
+  }, [fetchLessons])
 
-  const filteredLessons = lessons.filter(
-    (l) => l.title.toLowerCase().includes(search.toLowerCase()) ||
-           l.description.toLowerCase().includes(search.toLowerCase()) ||
-           l.category.toLowerCase().includes(search.toLowerCase())
-  )
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearch(e.target.value)
+    setPage(1)
+  }
+
+  const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setCategory(e.target.value)
+    setPage(1)
+  }
+
+  const handleDifficultyChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setDifficulty(e.target.value as 'beginner' | 'intermediate' | 'advanced' | '')
+    setPage(1)
+  }
+
+  const handlePageChange = (newPage: number) => {
+    setPage(newPage)
+  }
+
+  const totalPages = Math.ceil(total / pageSize)
 
   if (loading) {
     return (
@@ -49,59 +82,100 @@ export function LessonList() {
   if (error) {
     return (
       <div className="card" style={{ textAlign: 'center', padding: '3rem' }}>
-        <p style={{ color: 'var(--color-danger)', marginBottom: '1rem' }}>{error}</p>
-        <button className="btn btn-primary" onClick={() => window.location.reload()}>
-          Retry
-        </button>
+        <div style={{ color: 'var(--color-error)', marginBottom: '1rem' }}>Failed to load lessons</div>
+        <button onClick={fetchLessons} style={{ padding: '0.5rem 1rem' }}>Retry</button>
       </div>
     )
   }
 
   return (
     <div>
-      <div style={{ marginBottom: '2rem' }}>
-        <h1 style={{ fontSize: '2rem', fontWeight: 700, marginBottom: '0.5rem' }}>Lessons</h1>
-        <p style={{ color: 'var(--color-text-muted)' }}>Visual, example-driven guide to Claude Code — from basic concepts to advanced agents.</p>
-      </div>
-
-      <div className="card" style={{ marginBottom: '1.5rem' }}>
-        <input
-          type="search"
-          className="input"
-          placeholder="Search lessons by title, description, or category…"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          style={{ maxWidth: '400px' }}
-        />
-      </div>
-
-      {filteredLessons.length === 0 ? (
-        <div className="card" style={{ textAlign: 'center', padding: '3rem' }}>
-          <p style={{ color: 'var(--color-text-muted)', marginBottom: '1rem' }}>
-            {search ? 'No lessons match your search.' : 'No lessons available yet. Check back soon!'}
-          </p>
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem', marginBottom: '1.5rem', alignItems: 'center' }}>
+        <div style={{ flex: 1, minWidth: '200px' }}>
+          <input
+            type="text"
+            placeholder="Search lessons…"
+            value={search}
+            onChange={handleSearchChange}
+            style={{ width: '100%', padding: '0.5rem', borderRadius: '4px', border: '1px solid var(--color-border)', background: 'var(--color-bg)', color: 'var(--color-text)' }}
+          />
         </div>
-      ) : (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '1.5rem' }}>
-          {filteredLessons.map((lesson) => (
-            <Link to={`/lessons/${lesson.id}`} key={lesson.id} style={{ textDecoration: 'none', color: 'inherit' }}>
-              <div className="card" style={{ display: 'flex', flexDirection: 'column', height: '100%', transition: 'transform var(--transition), box-shadow var(--transition)', borderColor: 'var(--color-border)' }}>
-                <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '0.75rem' }}>
-                  <span className={`badge badge-${lesson.difficulty === 'beginner' ? 'success' : lesson.difficulty === 'intermediate' ? 'warning' : 'danger'}`}>
+        <div style={{ minWidth: '180px' }}>
+          <select
+            value={category}
+            onChange={handleCategoryChange}
+            style={{ width: '100%', padding: '0.5rem', borderRadius: '4px', border: '1px solid var(--color-border)', background: 'var(--color-bg)', color: 'var(--color-text)' }}
+          >
+            <option value="">All Categories</option>
+            {CATEGORIES.map((cat) => (
+              <option key={cat} value={cat}>{cat}</option>
+            ))}
+          </select>
+        </div>
+        <div style={{ minWidth: '180px' }}>
+          <select
+            value={difficulty}
+            onChange={handleDifficultyChange}
+            style={{ width: '100%', padding: '0.5rem', borderRadius: '4px', border: '1px solid var(--color-border)', background: 'var(--color-bg)', color: 'var(--color-text)' }}
+          >
+            <option value="">All Difficulties</option>
+            {DIFFICULTIES.map((diff) => (
+              <option key={diff} value={diff}>{diff.charAt(0).toUpperCase() + diff.slice(1)}</option>
+            ))}
+          </select>
+        </div>
+      </div>
+
+      <div style={{ display: 'grid', gap: '1rem', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))' }}>
+        {lessons.map((lesson) => (
+          <Link to={`/lessons/${lesson.id}`} key={lesson.id} style={{ textDecoration: 'none', color: 'inherit' }}>
+            <div className="card" style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+              <div style={{ padding: '1.5rem' }}>
+                <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '0.75rem', flexWrap: 'wrap' }}>
+                  <span className="badge" style={{ background: 'var(--color-primary-bg)', color: 'var(--color-primary)', textTransform: 'capitalize' }}>
+                    {lesson.category}
+                  </span>
+                  <span className="badge" style={{ background: 'var(--color-secondary-bg)', color: 'var(--color-secondary)', textTransform: 'capitalize' }}>
                     {lesson.difficulty}
                   </span>
-                  <span className="badge badge-primary">{lesson.category}</span>
                 </div>
-                <h3 style={{ fontSize: '1.125rem', fontWeight: 600, marginBottom: '0.5rem' }}>{lesson.title}</h3>
-                <p style={{ color: 'var(--color-text-muted)', fontSize: '0.875rem', marginBottom: '1rem', flex: 1 }}>{lesson.description}</p>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', color: 'var(--color-text-muted)', fontSize: '0.875rem' }}>
-                  <span>⏱ {lesson.estimated_minutes} min</span>
+                <h3 style={{ margin: '0 0 0.5rem', fontSize: '1.125rem' }}>{lesson.title}</h3>
+                <p style={{ margin: 0, color: 'var(--color-text-muted)', fontSize: '0.875rem', lineHeight: 1.5 }}>
+                  {lesson.description}
+                </p>
+              </div>
+              <div style={{ padding: '0 1.5rem 1.5rem', marginTop: 'auto' }}>
+                <div style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)' }}>
+                  ~{lesson.estimated_minutes} min read
                 </div>
               </div>
-            </Link>
-          ))}
+            </div>
+          </Link>
+        ))}
+      </div>
+
+      {totalPages > 1 && (
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '0.5rem', marginTop: '2rem' }}>
+          <button
+            onClick={() => handlePageChange(page - 1)}
+            disabled={page === 1}
+            style={{ padding: '0.5rem 1rem', borderRadius: '4px', border: '1px solid var(--color-border)', background: 'var(--color-bg)', color: 'var(--color-text)', cursor: page === 1 ? 'not-allowed' : 'pointer' }}
+          >
+            Previous
+          </button>
+          <span style={{ color: 'var(--color-text-muted)' }}>
+            Page {page} of {totalPages}
+          </span>
+          <button
+            onClick={() => handlePageChange(page + 1)}
+            disabled={page === totalPages}
+            style={{ padding: '0.5rem 1rem', borderRadius: '4px', border: '1px solid var(--color-border)', background: 'var(--color-bg)', color: 'var(--color-text)', cursor: page === totalPages ? 'not-allowed' : 'pointer' }}
+          >
+            Next
+          </button>
         </div>
       )}
     </div>
   )
 }
+

@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.1.0 — work-in-progress checkpoint
+
+Partial code published for continued development. Known issues: STATUS.md.
+
 ## 1.0.0 — work-in-progress checkpoint
 
 Partial code published for continued development. Known issues: STATUS.md.
@@ -27,7 +31,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - JWT-based authentication with role-based access control (viewer, operator, admin)
 - Multi-provider LLM adapter framework (OpenAI-compatible, Anthropic, Gemini, Ollama)
 - SQLAlchemy models with Lesson, Section, Example, Template, UserProgress
-- Comprehensive test suite: 30 backend tests, 5 frontend tests
+- Comprehensive test suite: 30 backend tests, 6 frontend tests
+- Lesson list with category/difficulty filters and pagination (server-side)
 
 ### Security
 - No credentials or secrets committed
