@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { render, screen, fireEvent, waitFor } from '@testing-library/react'
+import { render, screen, fireEvent, waitFor, act } from '@testing-library/react'
 import { BrowserRouter } from 'react-router-dom'
 import { LessonList } from '@/components/LessonList'
 import { Workflows } from '@/components/Workflows'
@@ -48,8 +48,26 @@ describe('LessonList', () => {
     await waitFor(() => {
       expect(screen.getByText('CLI Basics')).toBeInTheDocument()
     })
-    expect(screen.getByText('Fundamentals')).toBeInTheDocument()
+    // Check for the category badge on the lesson card
+    const badges = screen.getAllByText('Fundamentals')
+    expect(badges.length).toBeGreaterThanOrEqual(1)
     expect(screen.getByText((content) => content.includes('15') && content.includes('min'))).toBeInTheDocument()
+  })
+
+  it('shows category and difficulty filter dropdowns', async () => {
+    api.get.mockResolvedValue({ lessons: [], total: 0, page: 1, page_size: 20 })
+
+    const { container } = renderWithRouter(<LessonList />)
+
+    // Wait for loading to finish
+    await waitFor(() => {
+      expect(screen.queryByText('Loading lessons…')).not.toBeInTheDocument()
+    })
+
+    // Check that dropdown options exist within this container
+    expect(container.querySelector('option[value=""]')?.textContent).toBe('All Categories')
+    expect(container.querySelectorAll('option[value="Fundamentals"]').length).toBeGreaterThanOrEqual(1)
+    expect(container.querySelectorAll('option[value="beginner"]').length).toBeGreaterThanOrEqual(1)
   })
 })
 
@@ -97,3 +115,4 @@ describe('Workflows', () => {
     })
   })
 })
+
