@@ -1,8 +1,23 @@
 # Changelog
 
+## 1.2.0 — work-in-progress checkpoint
+
+Partial code published for continued development. Known issues: STATUS.md.
+
 ## 1.1.0 — work-in-progress checkpoint
 
 Partial code published for continued development. Known issues: STATUS.md.
+
+### Fixed
+- Removed duplicate `httpx` dependency in `backend/requirements.txt`
+- Added `asyncpg` dependency for PostgreSQL support in Docker deployment
+- Added `postgres` optional dependency group in `pyproject.toml`
+
+### Verified
+- All 30 backend tests pass
+- All 6 frontend tests pass
+- Frontend TypeScript type check passes
+- Frontend production build succeeds
 
 ## 1.0.0 — work-in-progress checkpoint
 
