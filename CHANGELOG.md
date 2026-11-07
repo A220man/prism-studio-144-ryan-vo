@@ -1,8 +1,26 @@
 # Changelog
 
-## 1.2.0 — work-in-progress checkpoint
+## 1.3.0 — work-in-progress checkpoint
 
 Partial code published for continued development. Known issues: STATUS.md.
+
+## 1.2.0 — work-in-progress checkpoint
+
+### Added - OIDC Authentication with Keycloak (PKCE flow)
+- Backend: Proper PKCE S256 code challenge generation and verification
+- Backend: Authorization code exchange with Keycloak token endpoint
+- Backend: Secure httpOnly cookie storage for access/refresh tokens
+- Backend: Token validation from both Authorization header and cookies
+- Frontend: AuthContext for authentication state management
+- Frontend: Login/logout UI in header with user info and role badges
+- Frontend: Callback route for OAuth flow completion
+- Frontend: API client configured with credentials: 'include' for cookie auth
+- Loading state during initial auth check
+
+### Fixed
+- Updated auth tests to match new PKCE flow implementation
+- All 30 backend tests pass
+- All 6 frontend tests pass
 
 ## 1.1.0 — work-in-progress checkpoint
 

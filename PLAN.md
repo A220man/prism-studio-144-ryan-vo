@@ -4,7 +4,7 @@ Each round completes one feature or repair. Future items are planned, not implem
 
 ## Current round
 
-project-skeleton
+auth-oidc
 
 ## Roadmap
 
@@ -19,13 +19,13 @@ Acceptance:
 - CI workflow runs backend tests, frontend build/test, Docker builds
 - portfolio.json, README, LICENSE, CHANGELOG, .gitignore, .env.example present
 
-Implementation: `backend/app/main.py`, `backend/app/core/config.py`, `backend/app/core/database.py`, `backend/app/core/security.py`, `backend/app/api/health.py`, `backend/app/api/lessons.py`, `backend/app/api/workflows.py`, `backend/app/api/auth.py`, `backend/app/models/models.py`, `backend/app/services/lesson_service.py`, `backend/app/services/workflow_service.py`, `backend/app/services/llm_service.py`, `backend/tests/test_health.py`, `backend/tests/test_lessons.py`, `backend/tests/test_workflows.py`, `backend/tests/test_auth.py`, `backend/tests/test_llm.py`, `frontend/src/main.tsx`, `frontend/src/App.tsx`, `frontend/src/index.css`, `frontend/src/components/Layout.tsx`, `frontend/src/components/LessonList.tsx`, `frontend/src/components/LessonDetail.tsx`, `frontend/src/components/Workflows.tsx`, `frontend/src/api/client.ts`, `frontend/vite.config.ts`, `frontend/package.json`, `frontend/Dockerfile`, `frontend/nginx.conf`, `backend/Dockerfile`, `backend/requirements.txt`, `compose.yaml`, `keycloak/realm.json`, `.env.example`, `portfolio.json`, `README.md`, `LICENSE`, `CHANGELOG.md`, `pyproject.toml`, `.gitignore`, `.github/workflows/ci.yml`
+Implementation: `backend/app/main.py`, `backend/app/core/config.py`, `backend/app/core/database.py`, `backend/app/core/security.py`, `backend/app/api/health.py`, `backend/app/api/lessons.py`, `backend/app/api/workflows.py`, `backend/app/api/auth.py`, `backend/app/models/models.py`, `backend/app/services/lesson_service.py`, `backend/app/services/workflow_service.py`, `backend/app/services/llm_service.py`, `backend/tests/test_health.py`, `backend/tests/test_lessons.py`, `backend/tests/test_workflows.py`, `backend/tests/test_auth.py`, `backend/tests/test_llm.py`, `frontend/src/main.tsx`, `frontend/src/App.tsx`, `frontend/src/index.css`, `frontend/src/components/Layout.tsx`, `frontend/src/components/LessonList.tsx`, `frontend/src/components/LessonDetail.tsx`, `frontend/src/components/Workflows.tsx`, `frontend/src/api/client.ts`, `frontend/src/types/api.ts`
 
 Tests: `backend/tests/test_health.py`, `backend/tests/test_lessons.py`, `backend/tests/test_workflows.py`, `backend/tests/test_auth.py`, `backend/tests/test_llm.py`, `frontend/src/components/LessonList.test.tsx`
 
 ### auth-oidc — OIDC Authentication with Keycloak (PKCE flow)
 
-Status: planned
+Status: in_progress
 
 Acceptance:
 - Login redirects to Keycloak
@@ -33,6 +33,10 @@ Acceptance:
 - Access token validated on protected endpoints
 - Roles: viewer, operator, admin enforced
 - Logout clears session
+
+Implementation: `backend/app/api/auth.py`, `backend/app/api/deps.py`, `backend/app/core/security.py`, `frontend/src/context/AuthContext.tsx`, `frontend/src/components/Callback.tsx`, `frontend/src/components/Layout.tsx`, `frontend/src/App.tsx`, `frontend/src/api/client.ts`, `frontend/src/index.css`
+
+Tests: `backend/tests/test_auth.py`
 
 ### lesson-engine — Claude Code Lesson Engine (Core Domain)
 

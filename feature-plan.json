@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "current_feature": "project-skeleton",
+  "current_feature": "auth-oidc",
   "features": [
     {
       "id": "project-skeleton",
@@ -39,22 +39,7 @@
         "frontend/src/components/LessonDetail.tsx",
         "frontend/src/components/Workflows.tsx",
         "frontend/src/api/client.ts",
-        "frontend/vite.config.ts",
-        "frontend/package.json",
-        "frontend/Dockerfile",
-        "frontend/nginx.conf",
-        "backend/Dockerfile",
-        "backend/requirements.txt",
-        "compose.yaml",
-        "keycloak/realm.json",
-        ".env.example",
-        "portfolio.json",
-        "README.md",
-        "LICENSE",
-        "CHANGELOG.md",
-        "pyproject.toml",
-        ".gitignore",
-        ".github/workflows/ci.yml"
+        "frontend/src/types/api.ts"
       ],
       "tests": [
         "backend/tests/test_health.py",
@@ -68,7 +53,7 @@
     {
       "id": "auth-oidc",
       "title": "OIDC Authentication with Keycloak (PKCE flow)",
-      "status": "planned",
+      "status": "in_progress",
       "acceptance": [
         "Login redirects to Keycloak",
         "Callback exchanges code for tokens with PKCE",
@@ -76,8 +61,20 @@
         "Roles: viewer, operator, admin enforced",
         "Logout clears session"
       ],
-      "implementation": [],
-      "tests": []
+      "implementation": [
+        "backend/app/api/auth.py",
+        "backend/app/api/deps.py",
+        "backend/app/core/security.py",
+        "frontend/src/context/AuthContext.tsx",
+        "frontend/src/components/Callback.tsx",
+        "frontend/src/components/Layout.tsx",
+        "frontend/src/App.tsx",
+        "frontend/src/api/client.ts",
+        "frontend/src/index.css"
+      ],
+      "tests": [
+        "backend/tests/test_auth.py"
+      ]
     },
     {
       "id": "lesson-engine",
