@@ -25,7 +25,7 @@ Tests: `backend/tests/test_health.py`, `backend/tests/test_lessons.py`, `backend
 
 ### auth-oidc — OIDC Authentication with Keycloak (PKCE flow)
 
-Status: in_progress
+Status: done
 
 Acceptance:
 - Login redirects to Keycloak

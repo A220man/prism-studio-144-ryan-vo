@@ -53,7 +53,7 @@
     {
       "id": "auth-oidc",
       "title": "OIDC Authentication with Keycloak (PKCE flow)",
-      "status": "in_progress",
+      "status": "done",
       "acceptance": [
         "Login redirects to Keycloak",
         "Callback exchanges code for tokens with PKCE",
