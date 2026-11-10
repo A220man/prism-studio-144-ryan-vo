@@ -1,6 +1,15 @@
 # Changelog
 
+## 1.4.0 — work-in-progress checkpoint
+
+Partial code published for continued development. Known issues: STATUS.md.
+
 ## 1.3.0 — work-in-progress checkpoint
+
+### Fixed
+- Fixed frontend Callback component to call checkAuth() after OAuth redirect, ensuring user state is updated immediately after login
+- All 30 backend tests pass
+- All 6 frontend tests pass
 
 Partial code published for continued development. Known issues: STATUS.md.
 

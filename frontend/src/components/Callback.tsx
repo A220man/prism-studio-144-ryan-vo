@@ -1,8 +1,10 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '@/context/AuthContext';
 
 export function Callback() {
   const navigate = useNavigate();
+  const { checkAuth } = useAuth();
 
   useEffect(() => {
     // The backend handles the callback and sets cookies, then redirects to /
@@ -16,10 +18,12 @@ export function Callback() {
       // Redirect to home with error
       navigate('/?error=' + encodeURIComponent(errorDescription || error));
     } else {
-      // No error, redirect to home
-      navigate('/');
+      // No error, verify auth state then redirect to home
+      checkAuth().then(() => {
+        navigate('/');
+      });
     }
-  }, [navigate]);
+  }, [navigate, checkAuth]);
 
   return (
     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '300px' }}>
