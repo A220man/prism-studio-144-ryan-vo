@@ -370,3 +370,14 @@ class LessonService:
                     db.add(template)
 
         await db.commit()
+\n\
+    @staticmethod\
+    async def get_template_content(db: AsyncSession, lesson_id: str, template_id: str) -> Optional[Template]:\
+        result = await db.execute(\
+            select(Template)\
+                .join(Section, Template.section_id == Section.id)\
+                .join(Lesson, Section.lesson_id == Lesson.id)\
+                .where(Lesson.id == lesson_id, Template.id == template_id)\
+                .options(selectinload(Template.section), selectinload(Template.section.lesson))\
+        )\
+        return result.scalar_one_or_none()
