@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "prism-studio"
-version = "1.0.0"
+version = "1.5.0"
 description = "Visual, example-driven guide to Claude Code — from basic concepts to advanced agents, with copy-paste templates that bring immediate value."
 readme = "README.md"
 license = {text = "MIT"}
