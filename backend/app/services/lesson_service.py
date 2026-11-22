@@ -189,7 +189,7 @@ class LessonService:
                     {
                         "id": "skills-precedence",
                         "title": "Skill Precedence and Overrides",
-                        "content": "When skills share the same name across levels, the precedence order is:\n\n**Enterprise > Personal > Project**\n\nThis means a personal skill in `~/.claude/skills/` will override a project skill in `.claude/skills/` of the same name.\n\nThe `skillOverrides` setting (object keyed by skill name) controls **visibility**, not precedence:\n\n```json\n{\n  \"skillOverrides\": {\n    \"legacy-context\": \"name-only\",\n    \"deploy\": \"off\"\n  }\n}\n```\n\n| Value | Listed to Claude | In `/` menu |\n|-------|------------------|-------------|\n| `\"on\"` | Name and description | Yes |\n| `\"name-only\"` | Name only | Yes |\n| `\"user-invocable-only\"` | Hidden | Yes |\n| `\"off\"` | Hidden | Hidden |\n\nPlugin skills are managed via `/plugin` and are unaffected by `skillOverrides`.",
+                        "content": "When skills share the same name across levels, the precedence order is:\n\n**Enterprise > Personal > Project**\n\nThis means a personal skill in `~/.claude/skills/` will override a project skill in `.claude/skills/` of the same name.\n\nThe `skillOverrides` setting (object keyed by skill name) controls **visibility**, not precedence:\n\n```json\n{\n  \"skillOverrides\": {\n    \"legacy-context\": \"name-only\",\n    \"deploy\": \"off\"\n  }\n}\n```\n\n| Value | Listed to Claude | In `/` menu |\n|-------|------------------|-------------|\n| `\"on\"` | Name and description | Yes |\n| `\"name-only\"` | Name only | Yes |\n| `\"user-invocable-only\"` | Hidden | Yes |\n| `\"off\"` | Hidden | Hidden |\n\nPlugin skills are mana...",
                         "order": 1,
                         "examples": [
                             {
@@ -370,14 +370,14 @@ class LessonService:
                     db.add(template)
 
         await db.commit()
-\n\
-    @staticmethod\
-    async def get_template_content(db: AsyncSession, lesson_id: str, template_id: str) -> Optional[Template]:\
-        result = await db.execute(\
-            select(Template)\
-                .join(Section, Template.section_id == Section.id)\
-                .join(Lesson, Section.lesson_id == Lesson.id)\
-                .where(Lesson.id == lesson_id, Template.id == template_id)\
-                .options(selectinload(Template.section), selectinload(Template.section.lesson))\
-        )\
+
+    @staticmethod
+    async def get_template_content(db: AsyncSession, lesson_id: str, template_id: str) -> Optional[Template]:
+        result = await db.execute(
+            select(Template)
+                .join(Section, Template.section_id == Section.id)
+                .join(Lesson, Section.lesson_id == Lesson.id)
+                .where(Lesson.id == lesson_id, Template.id == template_id)
+                .options(selectinload(Template.section), selectinload(Template.section.lesson))
+        )
         return result.scalar_one_or_none()

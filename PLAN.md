@@ -40,13 +40,17 @@ Tests: `backend/tests/test_auth.py`
 
 ### lesson-engine — Claude Code Lesson Engine (Core Domain)
 
-Status: planned
+Status: in_progress
 
 Acceptance:
 - Lessons stored in SQLite with sections, examples, templates
 - API: list lessons, get lesson detail, search lessons
 - Deterministic lesson progression tracking
 - Copy-paste template extraction works offline
+
+Implementation: `backend/app/services/lesson_service.py`
+
+Tests: `backend/tests/test_lessons.py`
 
 ### workflow-templates — Interactive Workflow Templates (3+ workflows)
 
