@@ -79,24 +79,28 @@
     {
       "id": "lesson-engine",
       "title": "Claude Code Lesson Engine (Core Domain)",
-      "status": "planned",
+      "status": "in_progress",
       "acceptance": [
         "Lessons stored in SQLite with sections, examples, templates",
         "API: list lessons, get lesson detail, search lessons",
         "Deterministic lesson progression tracking",
         "Copy-paste template extraction works offline"
       ],
-      "implementation": [],
-      "tests": []
+      "implementation": [
+        "backend/app/services/lesson_service.py"
+      ],
+      "tests": [
+        "backend/tests/test_lessons.py"
+      ]
     },
     {
       "id": "workflow-templates",
       "title": "Interactive Workflow Templates (3+ workflows)",
       "status": "planned",
       "acceptance": [
-        "Workflow 1: Skill Creation Wizard → generates .claude/skills/ file",
-        "Workflow 2: Subagent Builder → generates agent definition",
-        "Workflow 3: MCP Server Configurator → generates MCP config",
+        "Workflow 1: Skill Creation Wizard \u2192 generates .claude/skills/ file",
+        "Workflow 2: Subagent Builder \u2192 generates agent definition",
+        "Workflow 3: MCP Server Configurator \u2192 generates MCP config",
         "Templates use deterministic algorithms, no LLM required"
       ],
       "implementation": [],
