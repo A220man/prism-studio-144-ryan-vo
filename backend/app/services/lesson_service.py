@@ -1,4 +1,5 @@
 from datetime import datetime, timezone
+import json
 from typing import Optional
 from uuid import uuid4
 
@@ -381,3 +382,52 @@ class LessonService:
                 .options(selectinload(Template.section), selectinload(Template.section.lesson))
         )
         return result.scalar_one_or_none()
+
+    @staticmethod
+    async def update_user_progress(
+        db: AsyncSession,
+        user_id: str,
+        lesson_id: str,
+        completed_section_ids: list[str],
+    ) -> UserProgress:
+        """Update or create user progress tracking for a lesson.
+        
+        Records which sections a user has completed in a lesson.
+        If no progress exists, creates a new record. If progress exists,
+        updates the completed_sections list.
+        
+        Args:
+            db: Database session
+            user_id: User identifier
+            lesson_id: Lesson identifier
+            completed_section_ids: List of section IDs the user has completed
+            
+        Returns:
+            The updated UserProgress object
+        """
+        # Serialize the completed section IDs to JSON for SQLite storage
+        completed_json = json.dumps(completed_section_ids)
+        
+        result = await db.execute(
+            select(UserProgress).where(
+                UserProgress.user_id == user_id, UserProgress.lesson_id == lesson_id
+            )
+        )
+        progress = result.scalar_one_or_none()
+        
+        if progress is None:
+            progress = UserProgress(
+                user_id=user_id,
+                lesson_id=lesson_id,
+                completed_sections=completed_json,
+            )
+            db.add(progress)
+        else:
+            # Merge with existing completed sections to avoid duplicates
+            existing = set(json.loads(progress.completed_sections)) if progress.completed_sections else set()
+            updated = list(existing | set(completed_section_ids))
+            progress.completed_sections = json.dumps(updated)
+        
+        await db.commit()
+        await db.refresh(progress)
+        return progress
