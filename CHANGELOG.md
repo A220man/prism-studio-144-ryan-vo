@@ -1,6 +1,18 @@
 # Changelog
 
+## 1.7.0 — work-in-progress checkpoint
+
+Partial code published for continued development. Known issues: STATUS.md.
+
 ## 1.6.0 — work-in-progress checkpoint
+
+Partial code published for continued development. Known issues: STATUS.md.
+
+## 1.7.0 — lesson progression tracking
+
+### Added
+- `LessonService.update_user_progress()` method for deterministic lesson progression tracking
+- `test_update_user_progress` test verifying progress creation and merge behavior
 
 Partial code published for continued development. Known issues: STATUS.md.
 

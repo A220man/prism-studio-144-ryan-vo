@@ -1,6 +1,8 @@
 import pytest
 from httpx import AsyncClient, ASGITransport
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
+import json
+from sqlalchemy import select
 from sqlalchemy.orm import sessionmaker
 
 from app.main import app
@@ -125,3 +127,64 @@ async def test_pagination(client: AsyncClient):
     assert len(data["lessons"]) <= 2
     assert data["page"] == 1
     assert data["page_size"] == 2
+@pytest.mark.asyncio
+async def test_update_user_progress():
+    """Test updating user progress tracking for lesson completion."""
+    from app.services.lesson_service import LessonService
+    from app.models import UserProgress
+    
+    async with TestingSessionLocal() as db:
+        # First seed lessons to have a lesson_id
+        await LessonService.seed_lessons(db)
+        
+        # Get a lesson ID from the seeded lessons
+        result = await db.execute(select(Lesson))
+        lessons = result.scalars().all()
+        lesson = lessons[0]
+        
+        # Test: Update progress with some completed sections
+        await LessonService.update_user_progress(
+            db=db,
+            user_id="user-123",
+            lesson_id=lesson.id,
+            completed_section_ids=["section-1", "section-2"],
+        )
+        
+        # Verify progress was created
+        result = await db.execute(
+            select(UserProgress).where(
+                UserProgress.user_id == "user-123",
+                UserProgress.lesson_id == lesson.id,
+            )
+        )
+        progress = result.scalar_one()
+        
+        assert progress.user_id == "user-123"
+        assert progress.lesson_id == lesson.id
+        completed = json.loads(progress.completed_sections)
+        assert "section-1" in completed
+        assert "section-2" in completed
+        assert len(completed) == 2
+        
+        # Test: Update progress again with additional sections (should merge)
+        await LessonService.update_user_progress(
+            db=db,
+            user_id="user-123",
+            lesson_id=lesson.id,
+            completed_section_ids=["section-3"],
+        )
+        
+        # Verify progress was updated with merged sections
+        result = await db.execute(
+            select(UserProgress).where(
+                UserProgress.user_id == "user-123",
+                UserProgress.lesson_id == lesson.id,
+            )
+        )
+        progress = result.scalar_one()
+        
+        completed = json.loads(progress.completed_sections)
+        assert "section-1" in completed
+        assert "section-2" in completed
+        assert "section-3" in completed
+        assert len(completed) == 3
